@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard | EduSense{% endblock %}
+{% block page_title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<section class="dashboard-hero">
+    <div>
+        <span class="section-kicker">Learner Workspace</span>
+        <h2>Hello, {{ student.name or 'Student' }}</h2>
+        <p>
+            Access assigned courses, attempt available assessments, review completed mark sheets, and track your conceptual performance through justification-based scoring.
+        </p>
+    </div>
+
+    <div class="dashboard-hero-card">
+        <span>Class Enrollment</span>
+        <strong>{{ student.class_name or 'Not assigned' }}</strong>
+        <p>Roll Number: {{ student.roll_number or 'Not provided' }}</p>
+    </div>
+</section>
+
+<div class="stats-grid">
+    <article class="stat-card">
+        <span>Available Courses</span>
+        <strong>{{ stats.total_courses }}</strong>
+        <p>Published course spaces</p>
+    </article>
+
+    <article class="stat-card">
+        <span>Attempted Courses</span>
+        <strong>{{ stats.attempted_courses }}</strong>
+        <p>Courses with submitted responses</p>
+    </article>
+
+    <article class="stat-card">
+        <span>Pending Courses</span>
+        <strong>{{ stats.pending_courses }}</strong>
+        <p>Courses still available to review</p>
+    </article>
+
+    <article class="stat-card">
+        <span>Average Performance</span>
+        <strong>{{ stats.average_percentage }}%</strong>
+        <p>Based on completed records</p>
+    </article>
+</div>
+
+<div class="lms-grid two dashboard-layout">
+    <article class="lms-card">
+        <div class="lms-card-header">
+            <h3>Access Summary</h3>
+            <p>
+                Your student dashboard is designed for assessment access and performance review. You can view assigned courses, attempt available quizzes, submit justifications, and open mark sheets after completion.
+            </p>
+        </div>
+
+        <div class="summary-list">
+            <div>
+                <span>Class</span>
+                <strong>{{ student.class_name or 'Not assigned' }}</strong>
+            </div>
+            <div>
+                <span>Answered Items</span>
+                <strong>{{ stats.answered_items }}</strong>
+            </div>
+            <div>
+                <span>Portal Role</span>
+                <strong>Student</strong>
+            </div>
+        </div>
+    </article>
+
+    <article class="lms-card">
+        <div class="lms-card-header">
+            <h3>Quick Filters</h3>
+            <p>Use these actions to continue your learning workflow without searching through pages.</p>
+        </div>
+
+        <div class="quick-filter-grid">
+            <a href="/student/books">View Courses</a>
+            <a href="/student/results">Open Mark Sheets</a>
+            <a href="/student/profile">View Profile</a>
+        </div>
+    </article>
+</div>
+
+<section class="lms-section">
+    <div class="section-title-row">
+        <div>
+            <span class="section-kicker">Dashboard Options</span>
+            <h3>Recommended Actions</h3>
+        </div>
+    </div>
+
+    <div class="feature-card-grid">
+        <article class="feature-card">
+            <div class="feature-card-top">
+                <span class="feature-icon">1</span>
+                <span class="status-chip">Courses</span>
+            </div>
+            <h3>Open Assigned Courses</h3>
+            <p>View the courses published for your class and start available assessments when ready.</p>
+            <div class="feature-actions">
+                <a href="/student/books" class="btn btn-primary">Open Courses</a>
+            </div>
+        </article>
+
+        <article class="feature-card">
+            <div class="feature-card-top">
+                <span class="feature-icon">2</span>
+                <span class="status-chip">Mark Sheets</span>
+            </div>
+            <h3>Review Your Results</h3>
+            <p>Check your marks, feedback, and performance records for completed assessments.</p>
+            <div class="feature-actions">
+                <a href="/student/results" class="btn btn-primary">Open Mark Sheets</a>
+            </div>
+        </article>
+
+        <article class="feature-card">
+            <div class="feature-card-top">
+                <span class="feature-icon">3</span>
+                <span class="status-chip">Profile</span>
+            </div>
+            <h3>Review Profile Details</h3>
+            <p>Confirm your class enrollment and student information before attempting assessments.</p>
+            <div class="feature-actions">
+                <a href="/student/profile" class="btn btn-primary">Open Profile</a>
+            </div>
+        </article>
+    </div>
+</section>
+{% endblock %}

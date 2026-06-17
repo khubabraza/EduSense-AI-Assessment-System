@@ -1,0 +1,661 @@
+{% extends "base.html" %}
+
+{% block title %}Assessment Studio | EduSense{% endblock %}
+{% block page_title %}Assessment Studio{% endblock %}
+
+{% block content %}
+<div class="gs-root">
+
+  <!-- TOP NAV BAR -->
+  <nav class="gs-navbar">
+    <div class="gs-navbar-left">
+      <a href="/admin/mcqs/{{ book_id }}" class="gs-back-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Back to Assessments
+      </a>
+      <span class="gs-divider">|</span>
+      <span class="gs-book-label">{{ book_title }}</span>
+    </div>
+
+    <div class="gs-breadcrumb">
+      <span class="gs-bc-item gs-bc-done">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        Setup
+      </span>
+      <span class="gs-bc-sep">›</span>
+      <span class="gs-bc-item gs-bc-active">Source</span>
+      <span class="gs-bc-sep">›</span>
+      <span class="gs-bc-item">Review</span>
+    </div>
+  </nav>
+
+  <!-- PAGE HERO -->
+<header class="gs-hero gs-hero-split">
+  <div class="gs-hero-main">
+    <div class="gs-hero-badge">AI Quiz Builder</div>
+    <h1 class="gs-hero-title">Build a New Assessment</h1>
+    <p class="gs-hero-sub">
+      Configure, generate, and review AI-powered MCQs for <strong>{{ book_title }}</strong>.
+    </p>
+  </div>
+
+  <div class="gs-tip-card gs-tip-card-hero">
+    <div class="gs-tip-header">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      Performance Tips
+    </div>
+
+    <ul class="gs-tip-list">
+      <li>Use <strong>Paste Notes</strong> for fastest generation.</li>
+      <li>Keep question count to <strong>1–3 MCQs</strong> for demo.</li>
+      <li>Use small files for <strong>Book + Topic</strong> mode.</li>
+    </ul>
+  </div>
+</header>
+
+  <!-- ERROR MESSAGE -->
+  {% if error %}
+  <div class="gs-alert gs-alert-error">
+    <div class="gs-alert-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    </div>
+
+    <div class="gs-alert-body">
+      <p class="gs-alert-title">Generation could not be completed</p>
+      <p class="gs-alert-msg">{{ error }}</p>
+    </div>
+
+    <div class="gs-alert-actions">
+      <a href="/admin/mcqs/generate/{{ book_id }}" class="gs-btn gs-btn-primary gs-btn-sm">Try Again</a>
+      <a href="/admin/mcqs/{{ book_id }}" class="gs-btn gs-btn-ghost gs-btn-sm">Back</a>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- SUCCESS MESSAGE -->
+  {% if generation_message %}
+  <div class="gs-alert gs-alert-success">
+    <div class="gs-alert-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+
+    <div class="gs-alert-body">
+      <p class="gs-alert-title">Preview is ready</p>
+      <p class="gs-alert-msg">{{ generation_message }}</p>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- MAIN BUILDER FORM -->
+  <form
+    method="POST"
+    action="/admin/mcqs/generate/{{ book_id }}"
+    enctype="multipart/form-data"
+    class="gs-form"
+    data-generation-form="true"
+    onsubmit="return handleGenerationSubmit(event)"
+  >
+    <input type="hidden" name="generation_mode" id="generation_mode" value="{{ generation_mode or 'pasted_notes' }}">
+    <input type="hidden" name="topic_name" value="{{ topic_name or '' }}">
+
+    <div class="gs-layout">
+
+      <!-- LEFT MAIN PANEL -->
+      <main class="gs-main">
+
+        <!-- QUIZ DETAILS -->
+        <div class="gs-card">
+          <div class="gs-card-head">
+            <div class="gs-card-step">01</div>
+            <div>
+              <h2 class="gs-card-title">Quiz Details</h2>
+              <p class="gs-card-desc">Name your assessment and choose question count.</p>
+            </div>
+          </div>
+
+          <div class="gs-row">
+            <div class="gs-field gs-field-grow">
+              <label class="gs-label">Assessment Name <span class="gs-req">*</span></label>
+              <input
+                class="gs-input"
+                type="text"
+                name="assessment_title"
+                value="{{ assessment_title or '' }}"
+                placeholder="e.g. Stack Operations Quiz"
+                required
+              >
+            </div>
+
+            <div class="gs-field gs-field-fixed">
+              <label class="gs-label">Number of MCQs <span class="gs-req">*</span></label>
+              <select class="gs-select" name="num_mcqs" required>
+                {% for n in range(1, 11) %}
+                  <option value="{{ n }}" {% if num_mcqs == n %}selected{% endif %}>
+                    {{ n }} MCQ{{ 's' if n > 1 else '' }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTENT SOURCE -->
+        <div class="gs-card">
+          <div class="gs-card-head">
+            <div class="gs-card-step">02</div>
+            <div>
+              <h2 class="gs-card-title">Content Source</h2>
+              <p class="gs-card-desc">Choose how to provide course material for MCQ generation.</p>
+            </div>
+          </div>
+
+          <!-- MODE TABS -->
+          <div class="gs-mode-tabs">
+            <button type="button" class="gs-mode-tab" data-mode="pasted_notes" onclick="setGenerationMode('pasted_notes')">
+              <span class="gs-mode-tab-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                  <polyline points="10 9 9 9 8 9"/>
+                </svg>
+              </span>
+              <span class="gs-mode-tab-label">Paste Notes</span>
+              <span class="gs-mode-tab-hint">Fastest</span>
+            </button>
+
+            <button type="button" class="gs-mode-tab" data-mode="uploaded_file" onclick="setGenerationMode('uploaded_file')">
+              <span class="gs-mode-tab-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+              </span>
+              <span class="gs-mode-tab-label">Upload Notes</span>
+              <span class="gs-mode-tab-hint">PDF / DOCX</span>
+            </button>
+
+            <button type="button" class="gs-mode-tab" data-mode="uploaded_file_with_topic" onclick="setGenerationMode('uploaded_file_with_topic')">
+              <span class="gs-mode-tab-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="3" width="20" height="14" rx="2"/>
+                  <line x1="8" y1="21" x2="16" y2="21"/>
+                  <line x1="12" y1="17" x2="12" y2="21"/>
+                </svg>
+              </span>
+              <span class="gs-mode-tab-label">Book + Topic</span>
+              <span class="gs-mode-tab-hint">Targeted</span>
+            </button>
+          </div>
+
+          <!-- SOURCE PANELS -->
+          <div class="gs-source-panels">
+
+            <div id="notes_text_box" class="gs-source-panel">
+              <div class="gs-field">
+                <label class="gs-label">Course Notes</label>
+                <textarea
+                  class="gs-textarea"
+                  name="notes_text"
+                  rows="10"
+                  placeholder="Paste your lecture notes, textbook excerpts, or study material here..."
+                >{{ notes_text or '' }}</textarea>
+              </div>
+            </div>
+
+            <div id="file_upload_box" class="gs-source-panel" style="display:none;">
+              <label class="gs-label">Upload File</label>
+
+              <label class="gs-dropzone">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+
+                <span class="gs-dropzone-label">Click to upload or drag and drop</span>
+                <span class="gs-dropzone-hint">Supports TXT, PDF, DOCX — smaller files run faster</span>
+                <input type="file" name="notes_file" accept=".txt,.pdf,.docx" class="gs-file-input">
+              </label>
+
+              {% if uploaded_filename %}
+              <div class="gs-file-pill">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                <span>{{ uploaded_filename }}</span>
+                {% if extracted_file_chars %}
+                  <span class="gs-file-pill-badge">{{ extracted_file_chars }} chars</span>
+                {% endif %}
+              </div>
+              {% endif %}
+            </div>
+
+            <div id="target_topic_box" class="gs-source-panel" style="display:none;">
+              <div class="gs-field">
+                <label class="gs-label">Topic or Chapter</label>
+                <input
+                  class="gs-input"
+                  type="text"
+                  name="target_topic"
+                  value="{{ target_topic or '' }}"
+                  placeholder="e.g. Chapter 3: Stack Operations"
+                >
+                <span class="gs-hint-text">Use a clear topic name, chapter title, or chapter number for best results.</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- GENERATE BUTTON -->
+        <div class="gs-form-footer">
+          <button type="submit" class="gs-btn gs-btn-primary gs-btn-lg">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+            Generate MCQs
+          </button>
+        </div>
+
+      </main>
+
+  <!-- PROGRESS OVERLAY -->
+  <div class="gs-overlay" id="generation_progress">
+    <div class="gs-progress-card">
+      <div class="gs-progress-ring">
+        <svg class="gs-spinner-svg" viewBox="0 0 50 50">
+          <circle class="gs-spinner-track" cx="25" cy="25" r="20" fill="none" stroke-width="4"/>
+          <circle class="gs-spinner-arc" cx="25" cy="25" r="20" fill="none" stroke-width="4"/>
+        </svg>
+
+        <svg class="gs-progress-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+      </div>
+
+      <h2 class="gs-progress-title">Generating MCQs</h2>
+      <p class="gs-progress-msg" id="progress_message">Preparing course material...</p>
+
+      <div class="gs-progress-steps">
+        <div class="gs-ps"><span class="progress-step active">Prepare</span></div>
+        <div class="gs-ps"><span class="progress-step">Connect</span></div>
+        <div class="gs-ps"><span class="progress-step">Generate</span></div>
+        <div class="gs-ps"><span class="progress-step">Validate</span></div>
+        <div class="gs-ps"><span class="progress-step">Preview</span></div>
+      </div>
+    </div>
+  </div>
+  </form>
+  
+  <!-- REVIEW SECTION -->
+  {% if generated_mcqs %}
+  <section class="gs-review">
+
+    <div class="gs-review-header">
+      <div>
+        <span class="gs-review-eyebrow">Step 3 of 3</span>
+        <h2 class="gs-review-title">Review & Save</h2>
+        <p class="gs-review-sub">Edit generated questions, add manual ones, then save your named quiz.</p>
+      </div>
+
+      <button type="button" class="gs-btn gs-btn-outline" onclick="addManualMcqCard()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Add Manual MCQ
+      </button>
+    </div>
+
+    <form method="POST" action="/admin/mcqs/save-generated/{{ book_id }}" id="saveAssessmentForm">
+
+      <div class="gs-save-name-row">
+        <div class="gs-field gs-field-grow">
+          <label class="gs-label">Quiz / Assessment Name <span class="gs-req">*</span></label>
+          <input
+            class="gs-input"
+            type="text"
+            name="assessment_title"
+            value="{{ assessment_title or '' }}"
+            placeholder="e.g. Stack Operations Quiz"
+            required
+          >
+        </div>
+      </div>
+
+      <div id="mcqReviewList" class="gs-mcq-list">
+        {% for mcq in generated_mcqs %}
+        <article class="gs-mcq-card mcq-review-item">
+
+          <div class="gs-mcq-card-head">
+            <span class="gs-mcq-badge question-count">Q{{ loop.index }}</span>
+            <span class="gs-mcq-generated-tag">AI Generated</span>
+
+            <button type="button" class="gs-remove-btn studio-remove-btn" onclick="removeMcqCard(this)" title="Remove">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="gs-field">
+            <label class="gs-label">Question</label>
+            <textarea class="gs-textarea" name="question" rows="3" required>{{ mcq.question }}</textarea>
+          </div>
+
+          <div class="gs-options-grid">
+            {% for letter, val in [('A', mcq.option_a), ('B', mcq.option_b), ('C', mcq.option_c), ('D', mcq.option_d)] %}
+            <div class="gs-option-field">
+              <span class="gs-option-label {% if letter == mcq.correct_option %}gs-option-correct{% endif %}">{{ letter }}</span>
+              <input class="gs-input" type="text" name="option_{{ letter | lower }}" value="{{ val }}" required>
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="gs-mcq-meta">
+            <div class="gs-field">
+              <label class="gs-label">Correct Answer</label>
+              <select class="gs-select" name="correct_option" required>
+                {% for opt in ['A','B','C','D'] %}
+                  <option value="{{ opt }}" {% if mcq.correct_option == opt %}selected{% endif %}>Option {{ opt }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="gs-field gs-field-grow">
+              <label class="gs-label">Model Justification</label>
+              <textarea class="gs-textarea" name="model_justification" rows="3" required>{{ mcq.model_justification }}</textarea>
+            </div>
+          </div>
+
+        </article>
+        {% endfor %}
+      </div>
+
+      <div class="gs-review-footer">
+        <button type="button" class="gs-btn gs-btn-outline" onclick="addManualMcqCard()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Add Manual MCQ
+        </button>
+
+        <div class="gs-review-footer-right">
+          <a href="/admin/mcqs/{{ book_id }}" class="gs-btn gs-btn-ghost">Cancel</a>
+
+          <button type="submit" class="gs-btn gs-btn-primary gs-btn-lg">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+              <polyline points="7 3 7 8 15 8"/>
+            </svg>
+            Save Named Quiz
+          </button>
+        </div>
+      </div>
+
+    </form>
+  </section>
+  {% endif %}
+
+</div>
+
+<!-- TOPIC WARNING MODAL -->
+<div class="topic-warning-modal" id="topicModeWarningModal">
+  <div class="topic-warning-backdrop" onclick="closeTopicModeWarning(false)"></div>
+
+  <div class="gs-modal-panel">
+    <button type="button" class="gs-modal-close topic-warning-close" onclick="closeTopicModeWarning(false)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+
+    <div class="gs-modal-icon-wrap">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/>
+        <line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+    </div>
+
+    <h2 class="gs-modal-title">Heads Up — Book + Topic Mode</h2>
+
+    <p class="gs-modal-desc">
+      This mode processes the full file and searches for the specified topic before generating questions. It may take longer than other modes.
+    </p>
+
+    <ul class="gs-modal-list">
+      <li>Use a clear topic name, chapter title, or chapter number.</li>
+      <li>Keep the MCQ count to 3 or fewer for live demos.</li>
+      <li>Upload only a relevant section or a small file for speed.</li>
+      <li>Switch to <strong>Paste Notes</strong> for the fastest experience.</li>
+    </ul>
+
+    <div class="gs-modal-actions">
+    <button type="button" class="gs-btn gs-btn-primary" onclick="closeTopicModeWarning(true)">Continue Anyway</button>      <button type="button" class="gs-btn gs-btn-ghost" onclick="closeTopicModeWarning(false)">Cancel</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const progressMessages = [
+  "Preparing course material...",
+  "Connecting to EduSense AI service...",
+  "Generating MCQs...",
+  "Validating questions...",
+  "Preparing preview..."
+];
+
+let progressTimer = null;
+let topicWarningConfirmed = false;
+
+function setGenerationMode(mode) {
+  const hiddenInput = document.getElementById("generation_mode");
+  hiddenInput.value = mode;
+
+  document.querySelectorAll(".gs-mode-tab").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.mode === mode);
+  });
+
+  const summaryMode    = document.getElementById("summaryMode");
+  const targetTopicBox = document.getElementById("target_topic_box");
+  const fileBox        = document.getElementById("file_upload_box");
+  const notesBox       = document.getElementById("notes_text_box");
+
+  if (mode === "pasted_notes") {
+    notesBox.style.display       = "block";
+    fileBox.style.display        = "none";
+    targetTopicBox.style.display = "none";
+    if (summaryMode) summaryMode.textContent = "Paste Notes";
+    topicWarningConfirmed = false;
+  }
+
+  if (mode === "uploaded_file") {
+    notesBox.style.display       = "none";
+    fileBox.style.display        = "block";
+    targetTopicBox.style.display = "none";
+    if (summaryMode) summaryMode.textContent = "Upload Notes";
+    topicWarningConfirmed = false;
+  }
+
+  if (mode === "uploaded_file_with_topic") {
+    notesBox.style.display       = "none";
+    fileBox.style.display        = "block";
+    targetTopicBox.style.display = "block";
+    if (summaryMode) summaryMode.textContent = "Book + Topic";
+    openTopicModeWarning();
+  }
+}
+
+function openTopicModeWarning() {
+  const modal = document.getElementById("topicModeWarningModal");
+  if (modal) {
+    modal.classList.add("show");
+    document.body.classList.add("modal-open");
+  }
+}
+
+function closeTopicModeWarning(confirmChoice = false) {
+  const modal = document.getElementById("topicModeWarningModal");
+  if (modal) {
+    modal.classList.remove("show");
+    document.body.classList.remove("modal-open");
+  }
+
+  if (confirmChoice) {
+    topicWarningConfirmed = true;
+  }
+}
+
+function handleGenerationSubmit(event) {
+  const mode = document.getElementById("generation_mode").value;
+
+  if (mode === "uploaded_file_with_topic" && !topicWarningConfirmed) {
+    event.preventDefault();
+    openTopicModeWarning();
+    return false;
+  }
+
+  showGenerationProgress();
+  return true;
+}
+
+function showGenerationProgress() {
+  const panel   = document.getElementById("generation_progress");
+  const message = document.getElementById("progress_message");
+
+  if (!panel || !message) {
+    return;
+  }
+
+  panel.classList.add("show");
+
+  let index = 0;
+
+  if (progressTimer) {
+    clearInterval(progressTimer);
+  }
+
+  progressTimer = setInterval(() => {
+    message.textContent = progressMessages[index] || "Preparing preview...";
+
+    document.querySelectorAll(".progress-step").forEach((step, i) => {
+      step.classList.toggle("active", i <= index);
+    });
+
+    index++;
+
+    if (index >= progressMessages.length) {
+      index = progressMessages.length - 1;
+    }
+  }, 1300);
+}
+
+function addManualMcqCard() {
+  const list = document.getElementById("mcqReviewList");
+
+  if (!list) {
+    return;
+  }
+
+  const count = list.querySelectorAll(".mcq-review-item").length + 1;
+
+  const card  = document.createElement("article");
+  card.className = "gs-mcq-card mcq-review-item manual-added-card";
+
+  card.innerHTML = `
+    <div class="gs-mcq-card-head">
+      <span class="gs-mcq-badge question-count">Q${count}</span>
+      <span class="gs-mcq-generated-tag">Manual</span>
+
+      <button type="button" class="gs-remove-btn studio-remove-btn" onclick="removeMcqCard(this)" title="Remove">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="gs-field">
+      <label class="gs-label">Question</label>
+      <textarea class="gs-textarea" name="question" rows="3" placeholder="Write your question here..." required></textarea>
+    </div>
+
+    <div class="gs-options-grid">
+      ${['A','B','C','D'].map(l => `
+      <div class="gs-option-field">
+        <span class="gs-option-label">${l}</span>
+        <input class="gs-input" type="text" name="option_${l.toLowerCase()}" placeholder="Option ${l}" required>
+      </div>`).join('')}
+    </div>
+
+    <div class="gs-mcq-meta">
+      <div class="gs-field">
+        <label class="gs-label">Correct Answer</label>
+        <select class="gs-select" name="correct_option" required>
+          <option value="">Select</option>
+          ${['A','B','C','D'].map(l => `<option value="${l}">Option ${l}</option>`).join('')}
+        </select>
+      </div>
+
+      <div class="gs-field gs-field-grow">
+        <label class="gs-label">Justification</label>
+        <textarea class="gs-textarea" name="model_justification" rows="3" placeholder="Reference justification..." required></textarea>
+      </div>
+    </div>
+  `;
+
+  list.appendChild(card);
+  renumberMcqCards();
+  card.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function removeMcqCard(button) {
+  const card = button.closest(".mcq-review-item");
+
+  if (card) {
+    card.remove();
+    renumberMcqCards();
+  }
+}
+
+function renumberMcqCards() {
+  document.querySelectorAll(".mcq-review-item .question-count").forEach((badge, i) => {
+    badge.textContent = "Q" + (i + 1);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const currentMode = document.getElementById("generation_mode")?.value || "pasted_notes";
+  setGenerationMode(currentMode);
+
+  if (currentMode !== "uploaded_file_with_topic") {
+    topicWarningConfirmed = false;
+  }
+});
+</script>
+{% endblock %}

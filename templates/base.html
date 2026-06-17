@@ -1,0 +1,239 @@
+{% macro icon(name) %}
+<svg class="lms-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    {% if name == 'dashboard' %}
+        <path d="M4 13h7V4H4v9Z"></path><path d="M13 20h7V11h-7v9Z"></path><path d="M4 20h7v-5H4v5Z"></path><path d="M13 9h7V4h-7v5Z"></path>
+    {% elif name == 'courses' %}
+        <path d="M5 4.5A2.5 2.5 0 0 1 7.5 2H20v17H7.5A2.5 2.5 0 0 0 5 21.5v-17Z"></path><path d="M9 7h7"></path><path d="M9 11h6"></path>
+    {% elif name == 'profile' %}
+        <path d="M20 21a8 8 0 0 0-16 0"></path><path d="M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"></path>
+    {% elif name == 'students' %}
+        <path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><path d="M9.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+    {% elif name == 'teachers' %}
+        <path d="M12 14c4.42 0 8 2.24 8 5v1H4v-1c0-2.76 3.58-5 8-5Z"></path><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path><path d="M18 8h4"></path><path d="M20 6v4"></path>
+    {% elif name == 'marks' %}
+        <path d="M4 19V5"></path><path d="M4 19h16"></path><path d="M8 16v-5"></path><path d="M12 16V8"></path><path d="M16 16v-3"></path>
+    {% elif name == 'assessment' %}
+        <path d="M7 3h10l3 3v15H4V6l3-3Z"></path><path d="M8 11h8"></path><path d="M8 15h5"></path><path d="M16 3v4h4"></path>
+    {% elif name == 'logout' %}
+        <path d="M10 17l5-5-5-5"></path><path d="M15 12H3"></path><path d="M21 19V5a2 2 0 0 0-2-2h-5"></path>
+    {% elif name == 'menu' %}
+        <path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path>
+    {% endif %}
+</svg>
+{% endmacro %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EduSense | AI Assessment LMS{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body class="{% if session.user_role %}app-body{% else %}auth-body{% endif %}">
+    <div class="edusense-bg"></div>
+
+    {% if session.user_role %}
+        {% set path = request.path %}
+        {% set user_name = current_user.name if current_user else session.get('display_name', 'EduSense User') %}
+        {% set role_label = current_user.role_label if current_user else session.user_role|title %}
+
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <aside class="lms-sidebar" id="lmsSidebar">
+            <div class="lms-brand">
+                <a href="{% if session.user_role == 'student' %}/student/dashboard{% else %}/admin/dashboard{% endif %}" class="lms-brand-link">
+                    <span class="lms-brand-logo">
+                        <img src="{{ url_for('static', filename='images/edusense-logo.png') }}" alt="EduSense Logo">
+                    </span>
+                    <span>
+                        <strong>EduSense</strong>
+                        <small>AI Assessment LMS</small>
+                    </span>
+                </a>
+            </div>
+
+            <div class="lms-user-card">
+                <span class="lms-user-avatar">{{ user_name[:1]|upper }}</span>
+                <div>
+                    <p>Hello, {{ user_name }}</p>
+                    <small>{{ role_label }} Workspace</small>
+                </div>
+            </div>
+
+            <nav class="lms-side-nav" aria-label="Sidebar navigation">
+                {% if session.user_role == 'student' %}
+                    <a href="/student/dashboard" class="{% if path == '/student/dashboard' %}active{% endif %}">
+                        {{ icon('dashboard') }} <span>Dashboard</span>
+                    </a>
+                    <a href="/student/profile" class="{% if path == '/student/profile' %}active{% endif %}">
+                        {{ icon('profile') }} <span>Profile</span>
+                    </a>
+                    <a href="/student/books" class="{% if path.startswith('/student/books') or path.startswith('/student/quiz') %}active{% endif %}">
+                        {{ icon('courses') }} <span>Courses</span>
+                    </a>
+                    <a href="/student/results" class="{% if path.startswith('/student/results') %}active{% endif %}">
+                        {{ icon('marks') }} <span>Mark Sheets</span>
+                    </a>
+                {% elif session.user_role == 'administrator' %}
+                    <a href="/admin/dashboard" class="{% if path == '/admin/dashboard' %}active{% endif %}">
+                        {{ icon('dashboard') }} <span>Dashboard</span>
+                    </a>
+                    <a href="/admin/classes" class="{% if path.startswith('/admin/classes') or path.startswith('/admin/books') or path.startswith('/admin/mcqs') %}active{% endif %}">
+                        {{ icon('courses') }} <span>Classes</span>
+                    </a>
+                    <a href="/admin/students" class="{% if path.startswith('/admin/students') %}active{% endif %}">
+                        {{ icon('students') }} <span>Students</span>
+                    </a>
+                    <a href="/admin/teachers" class="{% if path.startswith('/admin/teachers') %}active{% endif %}">
+                        {{ icon('teachers') }} <span>Teachers</span>
+                    </a>
+                    <a href="/admin/results" class="{% if path.startswith('/admin/results') %}active{% endif %}">
+                        {{ icon('marks') }} <span>Reports</span>
+                    </a>
+                {% elif session.user_role == 'teacher' %}
+                    <a href="/admin/dashboard" class="{% if path == '/admin/dashboard' %}active{% endif %}">
+                        {{ icon('dashboard') }} <span>Dashboard</span>
+                    </a>
+                    <a href="/admin/classes" class="{% if path.startswith('/admin/classes') or path.startswith('/admin/books') or path.startswith('/admin/mcqs') %}active{% endif %}">
+                        {{ icon('assessment') }} <span>Courses & Assessments</span>
+                    </a>
+                    <a href="/admin/results" class="{% if path.startswith('/admin/results') %}active{% endif %}">
+                        {{ icon('marks') }} <span>Student Reports</span>
+                    </a>
+                {% endif %}
+            </nav>
+
+            <div class="lms-sidebar-footer">
+                <span class="system-status-dot"></span>
+                <span>Secure role-based access enabled</span>
+            </div>
+        </aside>
+
+        <div class="lms-shell">
+            <header class="lms-navbar">
+                <div class="lms-navbar-left">
+                    <button type="button" class="lms-icon-button" id="sidebarToggle" aria-label="Toggle sidebar">
+                        {{ icon('menu') }}
+                    </button>
+
+                    <div>
+                        <p class="lms-navbar-kicker">EduSense Learning Management System</p>
+                        <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+                    </div>
+                </div>
+
+                <nav class="lms-navbar-links" aria-label="Main navigation">
+                    {% if session.user_role == 'student' %}
+                        <a href="/student/dashboard" class="{% if path == '/student/dashboard' %}active{% endif %}">Dashboard</a>
+                        <a href="/student/books" class="{% if path.startswith('/student/books') or path.startswith('/student/quiz') %}active{% endif %}">Courses</a>
+                        <a href="/student/results" class="{% if path.startswith('/student/results') %}active{% endif %}">Mark Sheets</a>
+                    {% elif session.user_role == 'administrator' %}
+                        <a href="/admin/dashboard" class="{% if path == '/admin/dashboard' %}active{% endif %}">Dashboard</a>
+                        <a href="/admin/classes" class="{% if path.startswith('/admin/classes') or path.startswith('/admin/books') or path.startswith('/admin/mcqs') %}active{% endif %}">Classes</a>
+                        <a href="/admin/students" class="{% if path.startswith('/admin/students') %}active{% endif %}">Students</a>
+                        <a href="/admin/teachers" class="{% if path.startswith('/admin/teachers') %}active{% endif %}">Teachers</a>
+                        <a href="/admin/results" class="{% if path.startswith('/admin/results') %}active{% endif %}">Reports</a>
+                    {% elif session.user_role == 'teacher' %}
+                        <a href="/admin/dashboard" class="{% if path == '/admin/dashboard' %}active{% endif %}">Dashboard</a>
+                        <a href="/admin/classes" class="{% if path.startswith('/admin/classes') or path.startswith('/admin/books') or path.startswith('/admin/mcqs') %}active{% endif %}">Assessments</a>
+                        <a href="/admin/results" class="{% if path.startswith('/admin/results') %}active{% endif %}">Reports</a>
+                    {% endif %}
+                </nav>
+
+                <div class="lms-navbar-right">
+                    <span class="lms-role-badge">{{ role_label }}</span>
+
+                    <div class="lms-user-menu">
+                        <button type="button" class="lms-user-menu-button" id="userMenuToggle">
+                            <span class="lms-user-avatar small">{{ user_name[:1]|upper }}</span>
+                            <span class="user-menu-text">
+                                <strong>Hello, {{ user_name }}</strong>
+                                <small>{{ role_label }}</small>
+                            </span>
+                            <span class="chevron">⌄</span>
+                        </button>
+
+                        <div class="lms-user-dropdown" id="userDropdown">
+                            {% if session.user_role == 'student' %}
+                                <a href="/student/dashboard">{{ icon('dashboard') }} Dashboard</a>
+                                <a href="/student/profile">{{ icon('profile') }} Profile</a>
+                                <a href="/student/books">{{ icon('courses') }} Courses</a>
+                                <a href="/student/results">{{ icon('marks') }} Mark Sheets</a>
+                            {% elif session.user_role == 'administrator' %}
+                                <a href="/admin/dashboard">{{ icon('dashboard') }} Dashboard</a>
+                                <a href="/admin/profile">{{ icon('profile') }} Profile</a>
+                                <a href="/admin/classes">{{ icon('courses') }} Classes</a>
+                                <a href="/admin/students">{{ icon('students') }} Students</a>
+                                <a href="/admin/teachers">{{ icon('teachers') }} Teachers</a>
+                                <a href="/admin/results">{{ icon('marks') }} Reports</a>
+                            {% elif session.user_role == 'teacher' %}
+                                <a href="/admin/dashboard">{{ icon('dashboard') }} Dashboard</a>
+                                <a href="/admin/profile">{{ icon('profile') }} Profile</a>
+                                <a href="/admin/classes">{{ icon('assessment') }} Courses & Assessments</a>
+                                <a href="/admin/results">{{ icon('marks') }} Student Reports</a>
+                            {% endif %}
+
+                            <div class="dropdown-divider"></div>
+                            <a href="/logout" class="danger">{{ icon('logout') }} Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="page-content">
+    {% else %}
+            <main class="auth-shell">
+    {% endif %}
+
+                {% block content %}{% endblock %}
+
+            </main>
+
+    {% if session.user_role %}
+            <footer class="app-footer">
+                <span>EduSense · Contextual Intelligent Automated Grading System</span>
+                <span>AI-powered assessment and performance reporting</span>
+            </footer>
+        </div>
+    {% endif %}
+
+    <script>
+        const sidebarToggle = document.getElementById("sidebarToggle");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
+        const userMenuToggle = document.getElementById("userMenuToggle");
+        const userDropdown = document.getElementById("userDropdown");
+
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener("click", function () {
+                if (window.innerWidth <= 960) {
+                    document.body.classList.toggle("sidebar-open");
+                } else {
+                    document.body.classList.toggle("sidebar-collapsed");
+                }
+            });
+        }
+
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener("click", function () {
+                document.body.classList.remove("sidebar-open");
+            });
+        }
+
+        if (userMenuToggle && userDropdown) {
+            userMenuToggle.addEventListener("click", function (event) {
+                event.stopPropagation();
+                userDropdown.classList.toggle("show");
+            });
+
+            document.addEventListener("click", function () {
+                userDropdown.classList.remove("show");
+            });
+        }
+    </script>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Attempt Assessment | EduSense{% endblock %}
+{% block page_title %}Attempt Assessment{% endblock %}
+
+{% block content %}
+<section class="student-quiz-page">
+
+    <header class="student-quiz-hero">
+        <div>
+            <span class="student-eyebrow">Assessment Attempt</span>
+            <h1>{{ quiz_name }}</h1>
+            <p>{{ course_name }}{% if class_name %} · {{ class_name }}{% endif %}</p>
+        </div>
+
+        <a href="/student/quiz/{{ book_id }}" class="student-btn student-btn-secondary">Back</a>
+    </header>
+
+    <form method="POST" action="/student/quiz/submit" class="student-quiz-form">
+        <input type="hidden" name="book_id" value="{{ book_id }}">
+        <input type="hidden" name="assessment_id" value="{{ assessment_id }}">
+        <input type="hidden" name="mcq_ids" value="{{ mcq_ids }}">
+
+        <div class="student-quiz-list">
+            {% for mcq in mcqs %}
+                <article class="student-question-card">
+                    <div class="student-question-head">
+                        <span>Question {{ loop.index }}</span>
+                        <strong>1 Mark</strong>
+                    </div>
+
+                    <h2>{{ mcq.question }}</h2>
+
+<div class="student-option-grid">
+    <label class="student-option-card">
+        <input type="radio" name="option_{{ mcq.id }}" value="A">
+        <div class="student-option-letter">A</div>
+        <div class="student-option-text">{{ mcq.option_a }}</div>
+    </label>
+
+    <label class="student-option-card">
+        <input type="radio" name="option_{{ mcq.id }}" value="B">
+        <div class="student-option-letter">B</div>
+        <div class="student-option-text">{{ mcq.option_b }}</div>
+    </label>
+
+    <label class="student-option-card">
+        <input type="radio" name="option_{{ mcq.id }}" value="C">
+        <div class="student-option-letter">C</div>
+        <div class="student-option-text">{{ mcq.option_c }}</div>
+    </label>
+
+    <label class="student-option-card">
+        <input type="radio" name="option_{{ mcq.id }}" value="D">
+        <div class="student-option-letter">D</div>
+        <div class="student-option-text">{{ mcq.option_d }}</div>
+    </label>
+</div>
+
+                    <div class="student-justification-box">
+                        <label>Justify your answer</label>
+                        <textarea 
+                            name="justification_{{ mcq.id }}" 
+                            rows="4" 
+                            placeholder="Explain why you selected this option..."
+                        ></textarea>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+
+        <div class="student-submit-bar">
+            <a href="/student/quiz/{{ book_id }}" class="student-btn student-btn-secondary">Cancel</a>
+            <button type="submit" class="student-btn student-btn-primary" onclick="return confirm('Submit this assessment? You will not be able to reattempt it.')">
+                Submit Assessment
+            </button>
+        </div>
+    </form>
+
+</section>
+{% endblock %}

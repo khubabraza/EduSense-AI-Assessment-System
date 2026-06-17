@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Classes | EduSense{% endblock %}
+{% block page_title %}Classes{% endblock %}
+
+{% block content %}
+<section class="lms-page-header">
+    <div>
+        <span class="section-kicker">Academic Structure</span>
+        <h2>Classes</h2>
+        <p>
+            Create and manage academic classes. Each class can contain multiple courses, enrolled students, and teacher-generated assessments.
+        </p>
+    </div>
+
+<section class="lms-section">
+    <div class="section-title-row">
+        <div>
+            <span class="section-kicker">Available Classes</span>
+            <h3>Class Records</h3>
+        </div>
+        <span class="count-pill">{{ classes|length }} Classes</span>
+    </div>
+
+    {% if classes %}
+        <div class="feature-card-grid">
+            {% for class in classes %}
+                <article class="feature-card">
+                    <div class="feature-card-top">
+                        <span class="status-chip">Active Class</span>
+                    </div>
+
+                    <h3>{{ class.name }}</h3>
+                    <p>
+                        Manage courses created for this class or review the students currently enrolled in this academic group.
+                    </p>
+
+                    <div class="feature-actions">
+                        <a href="/admin/books/{{ class.id }}" class="btn btn-primary">Manage Courses</a>
+                        <a href="/admin/students/{{ class.id }}" class="btn btn-secondary">View Students</a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>No classes created yet</h3>
+            <p>Create your first class to begin organizing courses and student assessments.</p>
+        </div>
+    {% endif %}
+</section>
+
+</section>
+
+{% if session.user_role == 'administrator' %}
+<div class="lms-grid two">
+    <article class="lms-card">
+        <div class="lms-card-header">
+            <h3>Create New Class</h3>
+            <p>Add a class or semester group before creating courses and assigning students.</p>
+        </div>
+
+        <form method="POST" action="/admin/classes/create" class="lms-form">
+            <div class="form-group">
+                <label>Class Name</label>
+                <input type="text" name="name" placeholder="Example: BSCS 1st Semester" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-wide">Create Class</button>
+        </form>
+    </article>
+
+    <article class="lms-card accent">
+        <div class="lms-card-header">
+            <h3>Class Management Summary</h3>
+            <p>
+                A class represents a student group. After creating a class, you can manage its courses and view the enrolled students separately.
+            </p>
+        </div>
+    </article>
+</div>
+{% endif %}
+
+{% endblock %}

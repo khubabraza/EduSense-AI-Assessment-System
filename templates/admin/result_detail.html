@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="text-align: center; margin: 60px 0;">
+    <h2>Quiz Results: {{ book }}</h2>
+    <p style="font-size: 20px;">Student: {{ student }}</p>
+</div>
+
+<div style="max-width: 900px; margin: 0 auto;">
+    <table>
+        <tr><th>Question</th><th>Selected</th><th>Marks</th><th>Feedback</th></tr>
+        {% for d in details %}
+        <tr>
+            <td>{{ d.question }}</td>
+            <td>{{ d.selected_option or 'Skipped' }}</td>
+            <td>{{ "%.1f"|format(d.marks * 100) }}%</td>
+            <td>{{ d.feedback }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div style="text-align: center; margin-top: 60px;">
+    <button onclick="location.href='/admin/results'" class="btn">Back to Results</button>
+</div>
+{% endblock %}

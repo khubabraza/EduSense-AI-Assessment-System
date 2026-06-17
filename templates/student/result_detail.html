@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}Detailed Mark Sheet | EduSense{% endblock %}
+{% block page_title %}Detailed Mark Sheet{% endblock %}
+
+{% block content %}
+<section class="student-marks-page">
+
+    <header class="student-page-hero">
+        <div>
+            <span class="student-eyebrow">Course Result Record</span>
+            <h1>{{ course.title }}</h1>
+            <p>View submitted assessments and open a compact result sheet for each quiz.</p>
+        </div>
+
+        <a href="/student/results" class="student-btn student-btn-secondary">Back to Mark Sheets</a>
+    </header>
+
+    {% if assessments %}
+        <div class="marks-assessment-list">
+            {% for assessment in assessments %}
+                <article class="marks-assessment-row">
+                    <div class="marks-assessment-left">
+                        <div class="assessment-date-box">
+                            <span>{{ assessment.attempt_date or 'N/A' }}</span>
+                        </div>
+
+                        <div>
+                            <h2>{{ assessment.assessment_title }}</h2>
+                            <p>
+                                {{ assessment.total_questions }} MCQs ·
+                                {{ assessment.obtained_marks }}/{{ assessment.total_questions }} marks ·
+                                {{ assessment.percentage or 0 }}%
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="student-assessment-actions">
+                        <button type="button" class="student-btn student-btn-primary" onclick="openResultSheet('resultSheet{{ assessment.assessment_id }}')">
+                            View Result
+                        </button>
+                    </div>
+                </article>
+
+                <div class="result-sheet-modal" id="resultSheet{{ assessment.assessment_id }}">
+                    <div class="result-sheet-backdrop" onclick="closeResultSheet('resultSheet{{ assessment.assessment_id }}')"></div>
+
+                    <div class="result-sheet-panel compact-sheet">
+                        <button type="button" class="result-sheet-close" onclick="closeResultSheet('resultSheet{{ assessment.assessment_id }}')">×</button>
+
+                        <div class="compact-sheet-header">
+                            <div>
+                                <span class="student-eyebrow">Official Result Sheet</span>
+                                <h2>{{ assessment.assessment_title }}</h2>
+                                <p>{{ course.title }} · {{ assessment.attempt_date or 'N/A' }}</p>
+                            </div>
+
+                            <div class="compact-score-box">
+                                <strong>{{ assessment.percentage or 0 }}%</strong>
+                                <span>{{ assessment.obtained_marks }}/{{ assessment.total_questions }} marks</span>
+                            </div>
+                        </div>
+
+                        <div class="compact-student-strip">
+                            <div>
+                                <span>Student</span>
+                                <strong>{{ student.name or 'N/A' }}</strong>
+                            </div>
+                            <div>
+                                <span>Roll No.</span>
+                                <strong>{{ student.roll_number or 'N/A' }}</strong>
+                            </div>
+                            <div>
+                                <span>Class</span>
+                                <strong>{{ student.class_name or course.class_name }}</strong>
+                            </div>
+                        </div>
+
+                        <div class="compact-result-table">
+                            <div class="compact-table-head">
+                                <span>Q#</span>
+                                <span>Question</span>
+                                <span>Your Option</span>
+                                <span>Marks</span>
+                                <span>AI Feedback</span>
+                                <span></span>
+                            </div>
+
+                            {% for detail in assessment.details %}
+                                <article class="compact-result-row">
+                                    <div class="compact-row-main">
+                                        <span class="q-pill">Q{{ loop.index }}</span>
+
+                                        <p class="compact-question">{{ detail.question }}</p>
+
+                                        <span class="selected-pill">
+                                            {{ detail.selected_option or 'Skipped' }}
+                                        </span>
+
+                                        <strong class="marks-pill">{{ detail.marks }}/1</strong>
+
+                                        <p class="compact-ai-feedback">
+                                            {{ detail.llm_feedback or 'Detailed AI feedback was not stored for this attempt.' }}
+                                        </p>
+
+                                        <button type="button" class="mini-detail-btn" onclick="toggleQuestionDetails(this)">
+                                            Details
+                                        </button>
+                                    </div>
+
+                                    <div class="compact-row-details">
+                                        <div class="compact-options">
+                                            <div class="{% if detail.correct_option == 'A' %}result-correct-option{% endif %} {% if detail.selected_option == 'A' %}result-selected-option{% endif %}">
+                                                <span>A</span>
+                                                <p>{{ detail.option_a }}</p>
+                                            </div>
+
+                                            <div class="{% if detail.correct_option == 'B' %}result-correct-option{% endif %} {% if detail.selected_option == 'B' %}result-selected-option{% endif %}">
+                                                <span>B</span>
+                                                <p>{{ detail.option_b }}</p>
+                                            </div>
+
+                                            <div class="{% if detail.correct_option == 'C' %}result-correct-option{% endif %} {% if detail.selected_option == 'C' %}result-selected-option{% endif %}">
+                                                <span>C</span>
+                                                <p>{{ detail.option_c }}</p>
+                                            </div>
+
+                                            <div class="{% if detail.correct_option == 'D' %}result-correct-option{% endif %} {% if detail.selected_option == 'D' %}result-selected-option{% endif %}">
+                                                <span>D</span>
+                                                <p>{{ detail.option_d }}</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="compact-feedback-grid">
+                                            <div>
+                                                <span>Model Justification</span>
+                                                <p>{{ detail.model_justification or 'N/A' }}</p>
+                                            </div>
+
+                                            <div>
+                                                <span>Student Justification</span>
+                                                <p>{{ detail.student_justification or 'No justification submitted.' }}</p>
+                                            </div>
+
+                                            <div class="wide">
+                                                <span>Scoring Calculation</span>
+                                                <p>{{ detail.feedback or 'N/A' }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <section class="student-empty-state">
+            <h2>No submitted assessments found</h2>
+            <p>You have not submitted any quiz for this course yet.</p>
+            <a href="/student/books" class="student-btn student-btn-primary">Go to Courses</a>
+        </section>
+    {% endif %}
+
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function openResultSheet(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.classList.add("show");
+        document.body.classList.add("modal-open");
+    }
+}
+
+function closeResultSheet(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.classList.remove("show");
+        document.body.classList.remove("modal-open");
+    }
+}
+
+function toggleQuestionDetails(button) {
+    const row = button.closest(".compact-result-row");
+    if (!row) return;
+
+    row.classList.toggle("open");
+    button.textContent = row.classList.contains("open") ? "Hide" : "Details";
+}
+</script>
+{% endblock %}

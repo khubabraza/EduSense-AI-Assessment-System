@@ -1,0 +1,11 @@
+Flask
+mysql-connector-python
+scikit-learn
+PyPDF2
+python-docx
+python-pptx
+requests
+torch
+transformers
+peft
+bitsandbytes

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}EduSense Login | AI Assessment Platform{% endblock %}
+
+{% block content %}
+<section class="login-page login-page-unified">
+    <div class="login-info-panel login-unified-panel">
+
+        <div class="login-info-content">
+            <div class="login-logo-row">
+                <div class="login-logo-wrap">
+                    <img src="{{ url_for('static', filename='images/edusense-logo.png') }}" alt="EduSense Logo">
+                </div>
+                <div>
+                    <h1>EduSense</h1>
+                    <p>Contextual Intelligent Automated Grading System</p>
+                </div>
+            </div>
+
+            <div class="login-hero-text">
+                <span class="login-kicker">Academic Assessment Portal</span>
+                <h2>AI-powered learning assessment for students.</h2>
+                <p>
+                    Access quizzes, manage course materials, generate MCQs, and review contextual grading results through a secure university-style LMS environment.
+                </p>
+            </div>
+
+            <div class="login-feature-grid">
+                <div class="login-feature">
+                    <span>01</span>
+                    <p>Role-based access for students, teachers, and administrators.</p>
+                </div>
+                <div class="login-feature">
+                    <span>02</span>
+                    <p>MCQ attempts with written justification and partial scoring.</p>
+                </div>
+                <div class="login-feature">
+                    <span>03</span>
+                    <p>AI-assisted MCQ generation and performance reporting.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-card-panel">
+            <div class="login-card">
+                <div class="login-card-header">
+                    <div class="login-card-logo">
+                        <img src="{{ url_for('static', filename='images/edusense-logo.png') }}" alt="EduSense Logo">
+                    </div>
+                    <h2>Sign in to EduSense</h2>
+                    <p>Use your assigned LMS username and password to continue.</p>
+                </div>
+
+                {% if error %}
+                    <div class="alert alert-danger login-alert">
+                        {{ error }}
+                    </div>
+                {% endif %}
+
+                <form method="POST" action="/login" class="login-form">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="Enter your username"
+                            autocomplete="username"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-wide login-submit">
+                        Sign In
+                    </button>
+                </form>
+
+                <div class="login-security-note">
+                    <span class="security-dot"></span>
+                    <p>
+                        Secure role-based access. Unauthorized users cannot open protected dashboard pages.
+                    </p>
+                </div>
+            </div>
+
+            <div class="login-footer-note">
+                <p>EduSense · Final Year Project · AI Assessment Platform</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

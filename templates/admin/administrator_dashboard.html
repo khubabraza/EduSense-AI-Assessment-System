@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Administrator Dashboard | EduSense{% endblock %}
+{% block page_title %}Administrator Dashboard{% endblock %}
+
+{% block content %}
+<section class="dashboard-hero">
+    <div>
+        <span class="section-kicker">Institutional Control Center</span>
+        <h2>Hello, {{ current_user.name if current_user else 'Administrator' }}</h2>
+        <p>
+            Monitor the academic workspace, manage teachers and students, organize courses, and review assessment activity across the EduSense LMS.
+        </p>
+    </div>
+
+    <div class="dashboard-hero-card">
+        <span>Access Level</span>
+        <strong>Administrator</strong>
+        <p>Full academic management access</p>
+    </div>
+</section>
+
+<div class="stats-grid">
+    <article class="stat-card">
+        <span>Classes</span>
+        <strong>{{ stats.total_classes }}</strong>
+        <p>Academic groups configured</p>
+    </article>
+
+    <article class="stat-card">
+        <span>Courses</span>
+        <strong>{{ stats.total_courses }}</strong>
+        <p>Total course records</p>
+    </article>
+
+    <article class="stat-card">
+        <span>Students</span>
+        <strong>{{ stats.total_students }}</strong>
+        <p>Learner accounts enrolled</p>
+    </article>
+
+    <article class="stat-card">
+        <span>Teachers</span>
+        <strong>{{ stats.total_teachers }}</strong>
+        <p>Faculty accounts created</p>
+    </article>
+</div>
+
+<div class="lms-grid two dashboard-layout">
+    <article class="lms-card">
+        <div class="lms-card-header">
+            <h3>Access Summary</h3>
+            <p>
+                As an administrator, you can create classes, manage courses, add teacher accounts, enroll students, and review performance reports. This workspace is designed to keep academic operations organized and easy to monitor.
+            </p>
+        </div>
+
+        <div class="summary-list">
+            <div>
+                <span>Published Courses</span>
+                <strong>{{ stats.published_courses }}</strong>
+            </div>
+            <div>
+                <span>Total MCQs</span>
+                <strong>{{ stats.total_mcqs }}</strong>
+            </div>
+            <div>
+                <span>Recorded Responses</span>
+                <strong>{{ stats.total_results }}</strong>
+            </div>
+            <div>
+                <span>Average Performance</span>
+                <strong>{{ stats.average_percentage }}%</strong>
+            </div>
+        </div>
+    </article>
+
+    <article class="lms-card">
+        <div class="lms-card-header">
+            <h3>Quick Filters</h3>
+            <p>Use these shortcuts to reach the most important LMS sections without searching through pages.</p>
+        </div>
+
+        <div class="quick-filter-grid">
+            <a href="/admin/classes">Manage Courses</a>
+            <a href="/admin/students">Student Management</a>
+            <a href="/admin/teachers">Teacher Management</a>
+            <a href="/admin/results">Performance Reports</a>
+        </div>
+    </article>
+</div>
+
+<section class="lms-section">
+    <div class="section-title-row">
+        <div>
+            <span class="section-kicker">Dashboard Options</span>
+            <h3>Recommended Actions</h3>
+        </div>
+    </div>
+
+    <div class="feature-card-grid">
+        <article class="feature-card">
+            <div class="feature-card-top">
+                <span class="feature-icon">1</span>
+                <span class="status-chip">Academic Setup</span>
+            </div>
+            <h3>Organize Courses</h3>
+            <p>Create classes and course spaces so teachers can prepare assessment content in a structured way.</p>
+            <div class="feature-actions">
+                <a href="/admin/classes" class="btn btn-primary">Open Courses</a>
+            </div>
+        </article>
+
+        <article class="feature-card">
+            <div class="feature-card-top">
+                <span class="feature-icon">2</span>
+                <span class="status-chip">Enrollment</span>
+            </div>
+            <h3>Manage Students</h3>
+            <p>Add learner accounts, assign classes, and maintain clean enrollment records for assessment access.</p>
+            <div class="feature-actions">
+                <a href="/admin/students" class="btn btn-primary">Open Students</a>
+            </div>
+        </article>
+
+        <article class="feature-card">
+            <div class="feature-card-top">
+                <span class="feature-icon">3</span>
+                <span class="status-chip">Faculty</span>
+            </div>
+            <h3>Manage Teachers</h3>
+            <p>Create instructor accounts and prepare the platform for teacher-led assessment generation.</p>
+            <div class="feature-actions">
+                <a href="/admin/teachers" class="btn btn-primary">Open Teachers</a>
+            </div>
+        </article>
+    </div>
+</section>
+{% endblock %}

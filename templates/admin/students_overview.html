@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Students | EduSense{% endblock %}
+{% block page_title %}Student Management{% endblock %}
+
+{% block content %}
+<section class="lms-page-header">
+    <div>
+        <span class="section-kicker">Administration</span>
+        <h2>Student Management</h2>
+        <p>Add students directly from the main LMS workspace, assign them to a class, and manage their access credentials.</p>
+    </div>
+</section>
+
+<div class="lms-grid two">
+    <article class="lms-card">
+        <div class="lms-card-header">
+            <h3>Add New Student</h3>
+            <p>Create a student account and assign it to the correct class.</p>
+        </div>
+
+        <form method="POST" action="/admin/students/add" class="lms-form">
+            <div class="form-group">
+                <label>Class</label>
+                <select name="class_id" required>
+                    <option value="">Select class</option>
+                    {% for class in classes %}
+                        <option value="{{ class.id }}">{{ class.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Student Name</label>
+                <input type="text" name="name" placeholder="Enter full name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Roll Number</label>
+                <input type="text" name="roll_number" placeholder="Enter roll number">
+            </div>
+
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" placeholder="Create username" required>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Create password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-wide">Add Student</button>
+        </form>
+    </article>
+
+    <article class="lms-card accent">
+        <div class="lms-card-header">
+            <h3>Student Access Policy</h3>
+            <p>
+                Each student should belong to the correct class so they only see relevant courses, assessments, and mark sheets.
+            </p>
+        </div>
+    </article>
+</div>
+
+<section class="lms-section">
+    <div class="section-title-row">
+        <div>
+            <span class="section-kicker">Records</span>
+            <h3>Registered Students</h3>
+        </div>
+        <span class="count-pill">{{ students|length }} Students</span>
+    </div>
+
+    {% if students %}
+        <div class="table-card">
+            <table class="lms-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Roll Number</th>
+                        <th>Username</th>
+                        <th>Class</th>
+                        <th class="text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                        <tr>
+                            <td>
+                                <strong>{{ student.name or 'Unnamed Student' }}</strong>
+                            </td>
+                            <td>{{ student.roll_number or '-' }}</td>
+                            <td>{{ student.username }}</td>
+                            <td>{{ student.class_name or 'Not assigned' }}</td>
+                            <td class="text-right">
+                                <form method="POST" action="/admin/students/delete/{{ student.id }}" onsubmit="return confirm('Remove this student from EduSense?');">
+                                    <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>No students registered yet</h3>
+            <p>Add the first student using the form above.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

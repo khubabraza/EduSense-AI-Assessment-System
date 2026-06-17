@@ -1,0 +1,38 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Flask / Python local files
+instance/
+.env
+*.log
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local cleanup archive - not part of final project
+_archive_before_final_cleanup/
+
+# Large model/training artifacts
+models/
+training_data/
+book_dataset/
+adapter_model.safetensors
+*.bin
+*.safetensors
+
+# Temporary files
+*.tmp
+*.bak

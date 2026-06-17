@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Courses | EduSense{% endblock %}
+{% block page_title %}Courses{% endblock %}
+
+{% block content %}
+<section class="student-assessment-page">
+
+    <header class="student-page-hero">
+        <div>
+            <span class="student-eyebrow">Learner Assessment Center</span>
+            <h1>My Courses</h1>
+            <p>Select a course to view pending assessments or open your saved mark sheets.</p>
+        </div>
+    </header>
+
+    {% if books %}
+        <div class="student-course-grid">
+            {% for book in books %}
+                <article class="student-course-card">
+                    <div class="student-course-top">
+
+                        {% if (book.pending_count or 0) > 0 %}
+                            <span class="student-status-chip active">{{ book.pending_count }} New</span>
+                        {% else %}
+                            <span class="student-status-chip muted">No New Quiz</span>
+                        {% endif %}
+                    </div>
+
+                    <h2>{{ book.title }}</h2>
+                    <p>{{ book.class_name }}</p>
+
+                    <div class="student-course-stats">
+                        <div>
+                            <span>Pending</span>
+                            <strong>{{ book.pending_count or 0 }}</strong>
+                        </div>
+                        <div>
+                            <span>Attempted</span>
+                            <strong>{{ book.attempted_count or 0 }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="student-course-actions">
+                        <a href="/student/quiz/{{ book.id }}" class="student-btn student-btn-primary">
+                            Attempt Quiz / Assessment
+                        </a>
+
+                        <a href="/student/results/detail/{{ book.id }}" class="student-btn student-btn-secondary">
+                            View Mark Sheet
+                        </a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <section class="student-empty-state">
+            <h2>No courses available</h2>
+            <p>No published courses are currently available for your class.</p>
+            <a href="/student/dashboard" class="student-btn student-btn-primary">Back to Dashboard</a>
+        </section>
+    {% endif %}
+
+</section>
+{% endblock %}

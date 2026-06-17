@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Assessment MCQs | EduSense{% endblock %}
+{% block page_title %}Assessment MCQs{% endblock %}
+
+{% block content %}
+<section class="lms-page-header">
+    <div>
+        <span class="section-kicker">Quiz Question Set</span>
+        <h2>{{ assessment.assessment_title }}</h2>
+        <p>
+            Review the MCQs saved under this assessment. These questions are kept separate from other quizzes in the same course.
+        </p>
+    </div>
+</section>
+
+<div class="stats-grid compact">
+    <article class="stat-card">
+        <span>Course</span>
+        <strong>{{ assessment.course_name }}</strong>
+        <p>{{ assessment.class_name }}</p>
+    </article>
+
+    <article class="stat-card">
+        <span>Assessment Date</span>
+        <strong>{{ assessment.created_date or 'N/A' }}</strong>
+        <p>Saved quiz record</p>
+    </article>
+
+    <article class="stat-card">
+        <span>Total MCQs</span>
+        <strong>{{ mcqs|length }}</strong>
+        <p>Questions in this quiz</p>
+    </article>
+
+    <article class="stat-card">
+        <span>Status</span>
+        <strong>{{ 'Published' if assessment.is_published else 'Draft' }}</strong>
+        <p>Student visibility</p>
+    </article>
+</div>
+
+<section class="lms-section">
+    <div class="section-title-row">
+        <div>
+            <span class="section-kicker">Question Review</span>
+            <h3>Saved MCQs</h3>
+        </div>
+
+        <div class="section-actions">
+            <a href="/admin/mcqs/{{ assessment.book_id }}" class="btn btn-secondary">
+                Back to Assessments
+            </a>
+        </div>
+    </div>
+
+    {% if mcqs %}
+        <div class="result-detail-list">
+            {% for mcq in mcqs %}
+                <article class="result-detail-card">
+                    <div class="result-question-header">
+                        <span>Question {{ loop.index }}</span>
+                        <strong>Correct: {{ mcq.correct_option }}</strong>
+                    </div>
+
+                    <h3>{{ mcq.question }}</h3>
+
+                    <div class="answer-grid">
+                        <div class="{% if mcq.correct_option == 'A' %}correct{% endif %}">
+                            <span>A</span> {{ mcq.option_a }}
+                        </div>
+                        <div class="{% if mcq.correct_option == 'B' %}correct{% endif %}">
+                            <span>B</span> {{ mcq.option_b }}
+                        </div>
+                        <div class="{% if mcq.correct_option == 'C' %}correct{% endif %}">
+                            <span>C</span> {{ mcq.option_c }}
+                        </div>
+                        <div class="{% if mcq.correct_option == 'D' %}correct{% endif %}">
+                            <span>D</span> {{ mcq.option_d }}
+                        </div>
+                    </div>
+
+                    <div class="feedback-grid">
+                        <div class="wide">
+                            <span>Model Justification</span>
+                            <p>{{ mcq.model_justification }}</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-actions">
+                        <form method="POST" action="/admin/mcqs/delete/{{ mcq.id }}" class="inline-form">
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this MCQ?')">
+                                Delete MCQ
+                            </button>
+                        </form>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>No MCQs found in this assessment</h3>
+            <p>This assessment does not currently contain any saved questions.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

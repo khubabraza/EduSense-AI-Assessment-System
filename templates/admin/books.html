@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Courses | EduSense{% endblock %}
+{% block page_title %}Manage Courses{% endblock %}
+
+{% block content %}
+<section class="lms-page-header">
+    <div>
+        <span class="section-kicker">Class Course Workspace</span>
+        <h2>{{ class_name }}</h2>
+        <p>
+            Manage the courses assigned to this class. Open a course to prepare AI-generated quizzes, add manual MCQs, and organize assessments for enrolled students.
+        </p>
+    </div>
+</section>
+
+<section class="lms-section">
+    <div class="section-title-row">
+        <div>
+            <span class="section-kicker">Available Courses</span>
+            <h3>Courses in {{ class_name }}</h3>
+        </div>
+
+        <div class="section-actions">
+            <a href="/admin/classes" class="btn btn-secondary">Back to Classes</a>
+            <a href="/admin/students/{{ class_id }}" class="btn btn-secondary">View Students</a>
+        </div>
+    </div>
+
+    {% if books %}
+        <div class="feature-card-grid">
+            {% for book in books %}
+                <article class="feature-card">
+                    <div class="feature-card-top">
+
+                        {% if book.is_published %}
+                            <span class="status-chip">Published</span>
+                        {% else %}
+                            <span class="status-chip muted">Draft</span>
+                        {% endif %}
+                    </div>
+
+                    <h3>{{ book.title }}</h3>
+                    <p>
+                        Open this course to generate quizzes, add manual MCQs, review question banks, and prepare assessments for students.
+                    </p>
+
+                    <div class="feature-actions">
+                        <a href="/admin/mcqs/{{ book.id }}" class="btn btn-primary">
+                            Manage Course Assessments
+                        </a>
+
+                        {% if not book.is_published %}
+                            <form method="POST" action="/admin/books/publish/{{ book.id }}" class="inline-form">
+                                <button type="submit" class="btn btn-secondary">Publish Course</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>No courses created for this class yet</h3>
+            <p>Create the first course below before generating quizzes or adding MCQs.</p>
+        </div>
+    {% endif %}
+</section>
+
+{% if session.user_role == 'administrator' %}
+<section class="lms-section">
+    <div class="section-title-row">
+        <div>
+            <span class="section-kicker">Course Setup</span>
+            <h3>Create New Course</h3>
+        </div>
+    </div>
+
+    <div class="lms-grid two">
+        <article class="lms-card">
+            <div class="lms-card-header">
+                <h3>Add Course to {{ class_name }}</h3>
+                <p>
+                    Create a course inside this class. After creating the course, it will be available for quiz generation and assessment management.
+                </p>
+            </div>
+
+            <form method="POST" action="/admin/books/create/{{ class_id }}" class="lms-form">
+                <div class="form-group">
+                    <label>Course Name</label>
+                    <input type="text" name="title" placeholder="Example: Computer Networks" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-wide">Create Course</button>
+            </form>
+        </article>
+
+        <article class="lms-card accent">
+            <div class="lms-card-header">
+                <h3>Course Management Summary</h3>
+                <p>
+                    Each course can contain multiple teacher-saved assessments. In the next step, we will organize generated MCQs into separate named quizzes instead of mixing all MCQs together.
+                </p>
+            </div>
+        </article>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

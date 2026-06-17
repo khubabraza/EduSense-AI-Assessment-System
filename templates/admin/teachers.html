@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Teachers | EduSense{% endblock %}
+{% block page_title %}Teacher Management{% endblock %}
+
+{% block content %}
+<section class="lms-page-header">
+    <div>
+        <span class="section-kicker">Faculty Administration</span>
+        <h2>Teacher Management</h2>
+        <p>Add teacher accounts, review faculty access, and manage instructor-level LMS users from one professional workspace.</p>
+    </div>
+</section>
+
+<div class="lms-grid two">
+    <article class="lms-card">
+        <div class="lms-card-header">
+            <h3>Add New Teacher</h3>
+            <p>Create a teacher account with secure portal credentials. Teachers can manage course assessments and review student performance reports.</p>
+        </div>
+
+        <form method="POST" action="/admin/teachers/add" class="lms-form">
+            <div class="form-group">
+                <label>Teacher Name</label>
+                <input type="text" name="name" placeholder="Enter full name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" placeholder="Create username" required>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Create password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-wide">Add Teacher</button>
+        </form>
+    </article>
+
+    <article class="lms-card accent">
+        <div class="lms-card-header">
+            <h3>Faculty Access Summary</h3>
+            <p>
+                Teacher accounts are designed for academic assessment activities. A teacher can access courses, prepare MCQs, generate assessments, and review student reports according to the EduSense role-based access model.
+            </p>
+        </div>
+    </article>
+</div>
+
+<section class="lms-section">
+    <div class="section-title-row">
+        <div>
+            <span class="section-kicker">Faculty Records</span>
+            <h3>Registered Teachers</h3>
+        </div>
+        <span class="count-pill">{{ teachers|length }} Teachers</span>
+    </div>
+
+    {% if teachers %}
+        <div class="teacher-card-grid">
+            {% for teacher in teachers %}
+                <article class="mini-profile-card">
+                    <div class="mini-avatar">{{ (teacher.name or teacher.username or 'T')[:1]|upper }}</div>
+                    <div>
+                        <h4>{{ teacher.name or 'Unnamed Teacher' }}</h4>
+                        <p>{{ teacher.username }}</p>
+                    </div>
+                    <span class="status-chip">Teacher</span>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>No teachers registered yet</h3>
+            <p>Add the first teacher using the form above.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

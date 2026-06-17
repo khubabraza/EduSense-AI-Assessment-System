@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Student Profile | EduSense{% endblock %}
+{% block page_title %}Profile{% endblock %}
+
+{% block content %}
+<section class="lms-page-header">
+    <div>
+        <span class="section-kicker">Student Account</span>
+        <h2>Profile Information</h2>
+        <p>Review your EduSense learner profile, class enrollment, and access details for the assessment workspace.</p>
+    </div>
+</section>
+
+<div class="lms-grid two">
+    <article class="lms-card">
+        <div class="lms-card-header">
+            <h3>Account Details</h3>
+            <p>Your profile is connected with your assigned class, courses, assessments, and mark sheets.</p>
+        </div>
+
+        <div class="detail-list">
+            <div>
+                <span>Name</span>
+                <strong>{{ student.name or 'Not provided' }}</strong>
+            </div>
+
+            <div>
+                <span>Roll Number</span>
+                <strong>{{ student.roll_number or 'Not provided' }}</strong>
+            </div>
+
+            <div>
+                <span>Class</span>
+                <strong>{{ student.class_name or 'Not assigned' }}</strong>
+            </div>
+        </div>
+    </article>
+
+    <article class="lms-card accent">
+        <div class="lms-card-header">
+            <h3>Learning Access Summary</h3>
+            <p>
+                Your EduSense portal gives you access to assigned courses, pending assessments, attempted quizzes, and detailed mark sheets with option and justification-based scoring feedback.
+            </p>
+        </div>
+
+        <div class="action-row">
+            <a href="/student/books" class="btn btn-light">View Courses</a>
+            <a href="/student/results" class="btn btn-ghost-light">View Mark Sheets</a>
+        </div>
+    </article>
+</div>
+{% endblock %}

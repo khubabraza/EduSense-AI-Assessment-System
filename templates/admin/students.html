@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Enrolled Students | EduSense{% endblock %}
+{% block page_title %}Enrolled Students{% endblock %}
+
+{% block content %}
+<section class="lms-page-header">
+    <div>
+        <span class="section-kicker">Course Enrollment</span>
+        <h2>Students Enrolled in {{ class_name }}</h2>
+        <p>Review the learners assigned to this class. Student creation and credential management are handled from the main Student Management area.</p>
+    </div>
+</section>
+
+<section class="lms-section">
+    <div class="section-title-row">
+        <div>
+            <span class="section-kicker">Enrollment List</span>
+            <h3>Class Learners</h3>
+        </div>
+        <div class="section-actions">
+            {% if session.user_role == 'administrator' %}
+                <a href="/admin/students" class="btn btn-primary">Add or Manage Students</a>
+            {% endif %}
+            <a href="/admin/classes" class="btn btn-secondary">Back to Courses</a>
+        </div>
+    </div>
+
+    {% if students %}
+        <div class="table-card">
+            <table class="lms-table">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Roll Number</th>
+                        <th>Username</th>
+                        <th>Enrollment Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                        <tr>
+                            <td><strong>{{ student.name or 'Unnamed Student' }}</strong></td>
+                            <td>{{ student.roll_number or '-' }}</td>
+                            <td>{{ student.username }}</td>
+                            <td><span class="status-chip">Enrolled</span></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>No students enrolled in this class yet</h3>
+            <p>Use the main Student Management area to add students and assign them to this class.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

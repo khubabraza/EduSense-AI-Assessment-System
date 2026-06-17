@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Teacher Dashboard | EduSense{% endblock %}
+{% block page_title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+<section class="dashboard-hero">
+    <div>
+        <span class="section-kicker">Instructor Workspace</span>
+        <h2>Hello, {{ teacher.name or 'Teacher' }}</h2>
+        <p>
+            Prepare assessments, manage course MCQs, review enrolled students, and monitor learner performance through the EduSense academic assessment environment.
+        </p>
+    </div>
+
+    <div class="dashboard-hero-card">
+        <span>Access Level</span>
+        <strong>Teacher</strong>
+        <p>Assessment and reporting access</p>
+    </div>
+</section>
+
+<div class="stats-grid">
+    <article class="stat-card">
+        <span>Classes</span>
+        <strong>{{ stats.total_classes }}</strong>
+        <p>Academic groups available</p>
+    </article>
+
+    <article class="stat-card">
+        <span>Courses</span>
+        <strong>{{ stats.total_courses }}</strong>
+        <p>Course spaces available</p>
+    </article>
+
+    <article class="stat-card">
+        <span>Published Courses</span>
+        <strong>{{ stats.published_courses }}</strong>
+        <p>Visible to students</p>
+    </article>
+
+    <article class="stat-card">
+        <span>Student Responses</span>
+        <strong>{{ stats.total_results }}</strong>
+        <p>Submitted answer records</p>
+    </article>
+</div>
+
+<div class="lms-grid two dashboard-layout">
+    <article class="lms-card">
+        <div class="lms-card-header">
+            <h3>Access Summary</h3>
+            <p>
+                Your teacher workspace focuses on assessment preparation, MCQ management, LLM-supported quiz generation, and student performance review. Student account creation remains under administrator control, while enrolled students can be reviewed from each class.
+            </p>
+        </div>
+
+        <div class="summary-list">
+            <div>
+                <span>Total MCQs</span>
+                <strong>{{ stats.total_mcqs }}</strong>
+            </div>
+            <div>
+                <span>Average Performance</span>
+                <strong>{{ stats.average_percentage }}%</strong>
+            </div>
+        </div>
+    </article>
+
+    <article class="lms-card">
+        <div class="lms-card-header">
+            <h3>Quick Filters</h3>
+            <p>Move directly to assessment preparation, enrolled learners, or class performance reports.</p>
+        </div>
+
+        <div class="quick-filter-grid">
+            <a href="/admin/classes">Courses & Assessments</a>
+            <a href="/admin/results">Student Reports</a>
+            <a href="/admin/classes">View Enrolled Students</a>
+        </div>
+    </article>
+</div>
+
+<section class="lms-section">
+    <div class="section-title-row">
+        <div>
+            <span class="section-kicker">Dashboard Options</span>
+            <h3>Recommended Actions</h3>
+        </div>
+    </div>
+
+    <div class="feature-card-grid">
+        <article class="feature-card">
+            <div class="feature-card-top">
+                <span class="feature-icon">1</span>
+                <span class="status-chip">Assessments</span>
+            </div>
+            <h3>Prepare Course MCQs</h3>
+            <p>Open a course to add manual MCQs, generate AI-supported questions, and manage assessment material.</p>
+            <div class="feature-actions">
+                <a href="/admin/classes" class="btn btn-primary">Open Courses</a>
+            </div>
+        </article>
+
+        <article class="feature-card">
+            <div class="feature-card-top">
+                <span class="feature-icon">2</span>
+                <span class="status-chip">Reports</span>
+            </div>
+            <h3>Review Student Performance</h3>
+            <p>Analyze submitted responses, marks, and justification feedback for learners across classes.</p>
+            <div class="feature-actions">
+                <a href="/admin/results" class="btn btn-primary">Open Reports</a>
+            </div>
+        </article>
+    </div>
+</section>
+{% endblock %}

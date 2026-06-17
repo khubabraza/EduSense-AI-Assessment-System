@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Course Assessments | EduSense{% endblock %}
+{% block page_title %}Course Assessments{% endblock %}
+
+{% block content %}
+<section class="lms-page-header">
+    <div>
+        <span class="section-kicker">Assessment Workspace</span>
+        <h2>{{ book_title }}</h2>
+        <p>
+            Manage saved quizzes for this course. Create AI-generated assessments, review question sets, and keep each quiz separated by name.
+        </p>
+    </div>
+</section>
+
+<section class="lms-section">
+    <div class="section-title-row">
+        <div>
+            <span class="section-kicker">Main Action</span>
+            <h3>Generate New Quiz</h3>
+        </div>
+
+        <div class="section-actions">
+            <a href="/admin/books/{{ class_id }}" class="btn btn-secondary">Back to Courses</a>
+        </div>
+    </div>
+
+    <div class="lms-grid one">
+        <article class="lms-card accent">
+            <div class="lms-card-header">
+                <h3>Generate Quiz from AI</h3>
+                <p>
+                    Create a named quiz from pasted notes, uploaded material, or a specific topic. You will review and edit all MCQs before saving.
+                </p>
+            </div>
+
+            <div class="feature-actions">
+                <a href="/admin/mcqs/generate/{{ book_id }}" class="btn btn-secondary">
+                    Generate New Assessment
+                </a>
+            </div>
+        </article>
+
+        <!--<article class="lms-card">
+            <div class="lms-card-header">
+                <h3>Course Assessment Rule</h3>
+                <p>
+                    Every saved quiz is stored separately. Students will only see quizzes they have not attempted yet, and attempted quizzes move to Mark Sheets.
+                </p>
+            </div>
+        </article>-->
+    </div>
+</section>
+
+<section class="lms-section">
+    <div class="section-title-row">
+        <div>
+            <span class="section-kicker">Saved Assessments</span>
+            <h3>Quiz Records</h3>
+        </div>
+
+        <span class="count-pill">{{ assessments|length }} Saved</span>
+    </div>
+
+    {% if assessments %}
+        <div class="quiz-history-list">
+            {% for assessment in assessments %}
+                <article class="quiz-history-row">
+                    <div class="quiz-history-left">
+                        <span class="quiz-date-badge">{{ assessment.created_date or 'Draft' }}</span>
+
+                        <div>
+                            <h3>{{ assessment.title }}</h3>
+                            <p>
+                                {{ assessment.total_mcqs or 0 }} MCQs ·
+                                {% if assessment.is_published %}
+                                    Published
+                                {% else %}
+                                    Draft
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="quiz-history-actions">
+                        <a href="/admin/assessment/{{ assessment.id }}/mcqs" class="btn btn-primary">
+                            View MCQs
+                        </a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>No saved assessments yet</h3>
+            <p>
+                Generate a new assessment to create the first named quiz for this course.
+            </p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

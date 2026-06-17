@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Mark Sheets | EduSense{% endblock %}
+{% block page_title %}Mark Sheets{% endblock %}
+
+{% block content %}
+<section class="student-marks-page">
+
+    <header class="student-page-hero">
+        <div>
+            <span class="student-eyebrow">Academic Performance</span>
+            <h1>My Mark Sheets</h1>
+            <p>View submitted assessments course by course. Each result is saved after quiz submission.</p>
+        </div>
+    </header>
+
+    {% if courses %}
+        <div class="marks-course-grid">
+            {% for course in courses %}
+                <article class="marks-course-card">
+                    <div class="marks-card-top">
+                        <span class="course-avatar">{{ course.course_name[:1] }}</span>
+                        <span class="student-status-chip active">{{ course.attempted_count }} Attempted</span>
+                    </div>
+
+                    <h2>{{ course.course_name }}</h2>
+                    <p>{{ course.class_name }}</p>
+
+                    <div class="marks-stats-grid">
+                        <div>
+                            <span>Overall</span>
+                            <strong>{{ course.overall_percentage or 0 }}%</strong>
+                        </div>
+                        <div>
+                            <span>Marks</span>
+                            <strong>{{ course.obtained_marks or 0 }}/{{ course.total_questions or 0 }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="marks-meta-line">
+                        Last attempt: {{ course.last_attempt_date or 'N/A' }}
+                    </div>
+
+                    <div class="student-course-actions">
+                        <a href="/student/results/detail/{{ course.book_id }}" class="student-btn student-btn-primary">
+                            View Detailed Mark Sheet
+                        </a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <section class="student-empty-state">
+            <h2>No mark sheets available</h2>
+            <p>You have not submitted any assessments yet. Attempt a quiz first to generate your mark sheet.</p>
+            <a href="/student/books" class="student-btn student-btn-primary">Go to Courses</a>
+        </section>
+    {% endif %}
+
+</section>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Available Assessments | EduSense{% endblock %}
+{% block page_title %}Available Assessments{% endblock %}
+
+{% block content %}
+<section class="student-assessment-page">
+
+    <header class="student-page-hero">
+        <div>
+            <span class="student-eyebrow">Pending Assessments</span>
+            <h1>{{ book.title }}</h1>
+            <p>
+                Only assessments that you have not submitted yet are shown here. Submitted assessments move to your Mark Sheet.
+            </p>
+        </div>
+
+        <a href="/student/books" class="student-btn student-btn-secondary">Back to Courses</a>
+    </header>
+
+    {% if assessments %}
+        <div class="student-assessment-list">
+            {% for assessment in assessments %}
+                <article class="student-assessment-row">
+                    <div class="student-assessment-left">
+                        <div class="assessment-date-box">
+                            <span>{{ assessment.created_date or 'New' }}</span>
+                        </div>
+
+                        <div>
+                            <h2>{{ assessment.title }}</h2>
+                            <p>{{ assessment.total_mcqs }} MCQs · Ready to attempt</p>
+                        </div>
+                    </div>
+
+                    <div class="student-assessment-actions">
+                        <a href="/student/assessment/{{ assessment.id }}/attempt" class="student-btn student-btn-primary">
+                            Attempt Quiz
+                        </a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <section class="student-empty-state">
+            <h2>No new assessments available</h2>
+            <p>You have submitted all available assessments for this course, or no quiz has been published yet.</p>
+
+            <div class="student-empty-actions">
+                <a href="/student/results/detail/{{ book.id }}" class="student-btn student-btn-primary">View Mark Sheet</a>
+                <a href="/student/books" class="student-btn student-btn-secondary">Back to Courses</a>
+            </div>
+        </section>
+    {% endif %}
+
+</section>
+{% endblock %}

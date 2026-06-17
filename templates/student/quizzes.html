@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="text-align: center; margin: 60px 0;">
+    <h2>Available Quiz Books</h2>
+</div>
+
+<div style="max-width: 700px; margin: 0 auto;">
+    {% if books %}
+        {% for book in books %}
+        <div style="background: #f1f5f9; padding: 25px; margin: 20px 0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center;">
+            <h3 style="margin: 0 0 20px 0; color: #0056b3;">{{ book.title }}</h3>
+            <a href="/student/quiz/{{ book.id }}" class="btn">Start Quiz</a>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p style="text-align: center; color: #666; font-size: 18px; padding: 40px;">No published books available.</p>
+    {% endif %}
+</div>
+
+<div style="text-align: center; margin-top: 50px;">
+    <a href="/student/dashboard" class="btn">Back to Dashboard</a>
+</div>
+{% endblock %}

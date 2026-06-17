@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Profile | EduSense{% endblock %}
+{% block page_title %}Profile{% endblock %}
+
+{% block content %}
+<section class="lms-page-header">
+    <div>
+        <span class="section-kicker">Account</span>
+        <h2>Profile Information</h2>
+        <p>Review your EduSense account information and current access level.</p>
+    </div>
+</section>
+
+<div class="lms-grid two">
+    <article class="lms-card">
+        <div class="lms-card-header">
+            <h3>Account Details</h3>
+            <p>Your account is connected to the role-based EduSense workspace.</p>
+        </div>
+
+        <div class="detail-list">
+            <div>
+                <span>Name</span>
+                <strong>{{ user.name or 'Not provided' }}</strong>
+            </div>
+            <div>
+                <span>Username</span>
+                <strong>{{ user.username }}</strong>
+            </div>
+            <div>
+                <span>Role</span>
+                <strong>{{ user.role|title }}</strong>
+            </div>
+        </div>
+    </article>
+
+    <article class="lms-card accent">
+        <div class="lms-card-header">
+            <h3>Access Summary</h3>
+            <p>
+                Your dashboard, courses, assessments, and reports are displayed based on your assigned role.
+            </p>
+        </div>
+    </article>
+</div>
+{% endblock %}

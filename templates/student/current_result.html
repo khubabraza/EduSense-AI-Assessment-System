@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Assessment Submitted | EduSense{% endblock %}
+{% block page_title %}Assessment Submitted{% endblock %}
+
+{% block content %}
+<section class="submit-result-page">
+
+    <div class="submit-result-card">
+        <div class="submit-result-top">
+            <div>
+                <span class="student-eyebrow">Assessment Completed</span>
+                <h1>Your quiz has been submitted</h1>
+                <p>
+                    Your result has been saved successfully. You can review the official record later from the Mark Sheets section.
+                </p>
+            </div>
+
+            <div class="submit-score-circle">
+                <strong>{{ total_marks }}</strong>
+                <span>/ {{ total_out_of }}</span>
+            </div>
+        </div>
+
+        <div class="submit-summary-grid">
+            <div>
+                <span>Total Questions</span>
+                <strong>{{ num_questions }}</strong>
+            </div>
+
+            <div>
+                <span>Obtained Marks</span>
+                <strong>{{ total_marks }}</strong>
+            </div>
+
+            <div>
+                <span>Percentage</span>
+                <strong>
+                    {% if total_out_of %}
+                        {{ ((total_marks / total_out_of) * 100) | round(2) }}%
+                    {% else %}
+                        0%
+                    {% endif %}
+                </strong>
+            </div>
+        </div>
+
+        <div class="submit-actions">
+            <a href="/student/results" class="student-btn student-btn-primary">Open Mark Sheets</a>
+            <a href="/student/books" class="student-btn student-btn-secondary">Back to Courses</a>
+        </div>
+    </div>
+
+    <section class="submit-review-section">
+        <div class="submit-review-header">
+            <div>
+                <h2>Quick Review</h2>
+                <p>Open any question below to review scoring details.</p>
+            </div>
+        </div>
+
+        <div class="submit-review-list">
+            {% for result in results %}
+                <article class="submit-review-row">
+                    <div class="submit-review-main">
+                        <span class="q-pill">Q{{ loop.index }}</span>
+
+                        <p class="submit-question">{{ result.question }}</p>
+
+                        <span class="selected-pill">
+                            Selected: {{ result.selected }}
+                        </span>
+
+                        <strong class="marks-pill">
+                            {{ result.marks }}/1
+                        </strong>
+
+                        <button type="button" class="mini-detail-btn" onclick="toggleSubmitDetails(this)">
+                            Details
+                        </button>
+                    </div>
+
+                    <div class="submit-review-details">
+                        <div class="compact-options">
+                            <div class="{% if result.correct_option == 'A' %}result-correct-option{% endif %} {% if result.selected == 'A' %}result-selected-option{% endif %}">
+                                <span>A</span>
+                                <p>{{ result.option_a }}</p>
+                            </div>
+
+                            <div class="{% if result.correct_option == 'B' %}result-correct-option{% endif %} {% if result.selected == 'B' %}result-selected-option{% endif %}">
+                                <span>B</span>
+                                <p>{{ result.option_b }}</p>
+                            </div>
+
+                            <div class="{% if result.correct_option == 'C' %}result-correct-option{% endif %} {% if result.selected == 'C' %}result-selected-option{% endif %}">
+                                <span>C</span>
+                                <p>{{ result.option_c }}</p>
+                            </div>
+
+                            <div class="{% if result.correct_option == 'D' %}result-correct-option{% endif %} {% if result.selected == 'D' %}result-selected-option{% endif %}">
+                                <span>D</span>
+                                <p>{{ result.option_d }}</p>
+                            </div>
+                        </div>
+
+                        <div class="compact-feedback-grid">
+                            <div>
+                                <span>Student Justification</span>
+                                <p>{{ result.student_justification or 'No justification submitted.' }}</p>
+                            </div>
+
+                            <div>
+                                <span>Model Justification</span>
+                                <p>{{ result.model_justification or 'N/A' }}</p>
+                            </div>
+
+                            <div class="wide">
+                                <span>Scoring Calculation</span>
+                                <p>{{ result.feedback or 'N/A' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function toggleSubmitDetails(button) {
+    const row = button.closest(".submit-review-row");
+    if (!row) return;
+
+    row.classList.toggle("open");
+    button.textContent = row.classList.contains("open") ? "Hide" : "Details";
+}
+</script>
+{% endblock %}
